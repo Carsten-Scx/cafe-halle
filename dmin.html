@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Halle | Admin Dashboard</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#f2f7f4',
+              100: '#e1ede6',
+              700: '#28523c',
+              800: '#1b3b2b', // Primary deep forest green
+              900: '#12291e',
+            },
+            terracotta: {
+              400: '#d98e43',
+              500: '#c87d32', // Warm gold / terracotta
+              600: '#ac6422',
+            },
+            cream: {
+              50: '#ffffff',
+              100: '#fbf9f5', // Warm light cream
+              200: '#f4efe6',
+              300: '#e8decb',
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbf9f5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1b3b2b;
+      border-radius: 4px;
+    }
+
+    /* Active Sidebar Nav Item */
+    .nav-item-active {
+      background-color: rgba(200, 125, 50, 0.2);
+      border-left: 4px solid #c87d32;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Modal Backdrop Blur */
+    .modal-backdrop {
+      background-color: rgba(18, 41, 30, 0.75);
+      backdrop-filter: blur(6px);
+      transition: opacity 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 font-sans antialiased flex h-screen overflow-hidden selection:bg-terracotta-500 selection:text-white">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar" class="w-64 bg-forest-900 text-cream-200 flex flex-col justify-between shrink-0 transition-all duration-300 z-30 fixed lg:relative h-full -translate-x-full lg:translate-x-0">
+    
+    <!-- Sidebar Header / Branding -->
+    <div>
+      <div class="p-5 border-b border-forest-800 flex items-center justify-between">
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-10 h-10 rounded-full bg-terracotta-500 text-white flex items-center justify-center font-serif text-xl font-bold shadow group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <div>
+            <span class="font-serif text-lg font-bold text-cream-50 leading-tight block">CAFÉ HALLE</span>
+            <span class="text-[10px] text-terracotta-400 font-semibold uppercase tracking-widest block">Verwaltungskonsole</span>
+          </div>
+        </a>
+        <button onclick="toggleSidebar()" class="lg:hidden text-cream-300 hover:text-white">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1 text-sm font-medium">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left">
+          <i class="fa-solid fa-chart-pie w-5 text-terracotta-400"></i>
+          <span>Übersicht</span>
+        </button>
+
+        <button onclick="switchTab('reservations')" id="nav-reservations" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left justify-between">
+          <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-calendar-check w-5 text-terracotta-400"></i>
+            <span>Reservierungen & Brot</span>
+          </div>
+          <span id="pendingBadgeCount" class="bg-terracotta-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+        </button>
+
+        <button onclick="switchTab('menu')" id="nav-menu" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left">
+          <i class="fa-solid fa-utensils w-5 text-terracotta-400"></i>
+          <span>Speisekarte</span>
+        </button>
+
+        <button onclick="switchTab('events')" id="nav-events" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left">
+          <i class="fa-solid fa-calendar-days w-5 text-terracotta-400"></i>
+          <span>Events & Termine</span>
+        </button>
+
+        <button onclick="switchTab('gallery')" id="nav-gallery" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left">
+          <i class="fa-solid fa-images w-5 text-terracotta-400"></i>
+          <span>Galerie</span>
+        </button>
+
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-cream-300 hover:bg-forest-800 hover:text-white transition-all text-left">
+          <i class="fa-solid fa-sliders w-5 text-terracotta-400"></i>
+          <span>Einstellungen</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer / Back to Website -->
+    <div class="p-4 border-t border-forest-800 space-y-3">
+      <a href="index.html" class="flex items-center justify-center space-x-2 w-full py-2.5 px-4 rounded-lg bg-forest-800 hover:bg-terracotta-500 text-cream-100 hover:text-white text-xs font-bold transition-all border border-forest-700">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Zur Hauptwebsite</span>
+      </a>
+      
+      <div class="flex items-center space-x-3 px-2 py-1">
+        <div class="w-8 h-8 rounded-full bg-terracotta-500/20 text-terracotta-400 flex items-center justify-center font-bold text-xs">
+          AH
+        </div>
+        <div class="text-xs overflow-hidden">
+          <p class="font-bold text-cream-100 truncate">Admin Café Halle</p>
+          <p class="text-[10px] text-cream-300/70 truncate">Inhaber-Zugang</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+    
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shrink-0 shadow-sm z-20">
+      <div class="flex items-center space-x-4">
+        <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 hover:text-forest-800 focus:outline-none">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+        <h1 id="pageTitle" class="font-serif text-2xl font-bold text-forest-800">Übersicht & KPIs</h1>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Live Status Toggle Badge -->
+        <div class="hidden sm:flex items-center space-x-2 bg-cream-100 px-3 py-1.5 rounded-full border border-cream-300">
+          <span class="text-xs font-semibold text-slate-600">Status Website:</span>
+          <button onclick="toggleWebsiteStatus()" id="statusToggleBtn" class="flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 transition-all">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="statusToggleText">Normal Geöffnet</span>
+          </button>
+        </div>
+
+        <button onclick="showToast('Daten wurden erfolgreich synchronisiert!')" class="p-2 text-slate-500 hover:text-forest-800 rounded-lg hover:bg-slate-100 transition-colors" title="Aktualisieren">
+          <i class="fa-solid fa-rotate-right text-base"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Workspace -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8 bg-slate-50">
+
+      <!-- ==================================================== -->
+      <!-- TAB 1: DASHBOARD / OVERVIEW -->
+      <!-- ==================================================== -->
+      <section id="tab-dashboard" class="tab-content space-y-6">
+        
+        <!-- Quick Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-forest-800/10 text-forest-800 flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-utensils"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Tischreservierungen</p>
+              <h3 id="statTodayRes" class="text-2xl font-bold text-forest-800 mt-0.5">8 Anfragen</h3>
+              <p class="text-[11px] text-emerald-600 font-semibold mt-0.5"><i class="fa-solid fa-arrow-trend-up"></i> +2 für heute</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-terracotta-500/10 text-terracotta-500 flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-wheat-awn"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Brotbestellungen</p>
+              <h3 id="statBreadOrders" class="text-2xl font-bold text-forest-800 mt-0.5">34 Laibe</h3>
+              <p class="text-[11px] text-amber-600 font-semibold mt-0.5">Nächster Backtag: Do</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-euro-sign"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Geschätzter Umsatz</p>
+              <h3 class="text-2xl font-bold text-forest-800 mt-0.5">4.850 €</h3>
+              <p class="text-[11px] text-slate-500 mt-0.5">Aktueller Monat</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-700 flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase text-slate-400 tracking-wider">Aktive Events</p>
+              <h3 id="statActiveEvents" class="text-2xl font-bold text-forest-800 mt-0.5">3 Events</h3>
+              <p class="text-[11px] text-purple-600 font-semibold mt-0.5">Nächstes: Oktoberfest</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick Controls Banner -->
+        <div class="bg-gradient-to-r from-forest-800 to-forest-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div class="space-y-1">
+            <h3 class="font-serif text-xl font-bold text-cream-50">Schnellsteuerung Waldgaststätte</h3>
+            <p class="text-xs text-cream-300 max-w-2xl">Schalten Sie den Status der Online-Reservierung schnell um, falls der Biergarten wegen Regen schließt oder alle Plätze ausgebucht sind.</p>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button onclick="setGlobalNotice('Ausgebucht')" class="px-3.5 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs transition-colors">
+              <i class="fa-solid fa-ban mr-1"></i> Als Ausgebucht markieren
+            </button>
+            <button onclick="setGlobalNotice('Regen')" class="px-3.5 py-2 rounded-xl bg-forest-700 hover:bg-forest-600 text-white font-bold text-xs transition-colors border border-forest-600">
+              <i class="fa-solid fa-cloud-rain mr-1"></i> Nur Innenbereich geöffnet
+            </button>
+            <button onclick="setGlobalNotice('Normal')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Zurücksetzen
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+            <div>
+              <h3 class="font-serif font-bold text-lg text-forest-800">Neueste Anfragen & Bestätigungen</h3>
+              <p class="text-xs text-slate-500">Übersicht der eingegangenen Online-Formulare</p>
+            </div>
+            <button onclick="switchTab('reservations')" class="text-xs font-bold text-terracotta-500 hover:text-terracotta-600">
+              Alle anzeigen <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-4">Kunde</th>
+                  <th class="p-4">Typ / Anlass</th>
+                  <th class="p-4">Datum & Uhrzeit</th>
+                  <th class="p-4">Gäste / Details</th>
+                  <th class="p-4">Status</th>
+                  <th class="p-4 text-right">Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="recentTableBody" class="divide-y divide-slate-100">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- TAB 2: RESERVATIONS & BREAD MANAGEMENT -->
+      <!-- ==================================================== -->
+      <section id="tab-reservations" class="tab-content space-y-6 hidden">
+        
+        <!-- Toolbar & Filter -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button onclick="filterReservations('all')" class="res-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-forest-800 text-white">Alle</button>
+            <button onclick="filterReservations('Tischreservierung')" class="res-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Tische</button>
+            <button onclick="filterReservations('Brotbestellung')" class="res-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Brotbestellungen</button>
+            <button onclick="filterReservations('Schnitzeltag')" class="res-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Schnitzeltage</button>
+            <button onclick="filterReservations('Reibekuchentag')" class="res-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Reibekuchen</button>
+          </div>
+
+          <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+            <input type="text" id="resSearchInput" oninput="searchReservations()" placeholder="Namen oder Tel suchen..." class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500 w-full md:w-48">
+            <button onclick="openNewResModal()" class="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs shrink-0 shadow">
+              <i class="fa-solid fa-plus mr-1"></i> Manuell Eintragen
+            </button>
+          </div>
+        </div>
+
+        <!-- Bread Backing Status Card -->
+        <div class="bg-amber-50 rounded-2xl p-5 border border-amber-200/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div class="flex items-start space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-terracotta-500 text-white flex items-center justify-center font-bold text-lg shrink-0">
+              <i class="fa-solid fa-bread-slice"></i>
+            </div>
+            <div>
+              <h4 class="font-serif font-bold text-forest-800 text-base">Brot-Backkontingent für nächsten Donnerstag</h4>
+              <p class="text-xs text-slate-600">Kapazität: 50 Laibe gesamt | Reserviert: <span id="breadReservedCount" class="font-bold text-terracotta-600">34</span> Laibe</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <div class="w-32 bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="breadProgressBar" class="bg-terracotta-500 h-full w-[68%] transition-all"></div>
+            </div>
+            <span id="breadProgressPercent" class="text-xs font-bold text-forest-800">68%</span>
+          </div>
+        </div>
+
+        <!-- Full Reservations Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-4">Kunde & Kontakt</th>
+                  <th class="p-4">Reservierungstyp</th>
+                  <th class="p-4">Datum & Uhrzeit</th>
+                  <th class="p-4">Personen / Brot-Sorte</th>
+                  <th class="p-4">Anmerkung</th>
+                  <th class="p-4">Status</th>
+                  <th class="p-4 text-right">Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="fullResTableBody" class="divide-y divide-slate-100">
+                <!-- JS Populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- TAB 3: SPEISEKARTEN MANAGER -->
+      <!-- ==================================================== -->
+      <section id="tab-menu" class="tab-content space-y-6 hidden">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="font-serif font-bold text-xl text-forest-800">Speisekarte & Gerichte</h3>
+            <p class="text-xs text-slate-500">Verwalten Sie Preise, Beschreibungen und die Verfügbarkeit auf der Website.</p>
+          </div>
+          <button onclick="openMenuItemModal()" class="px-4 py-2.5 rounded-xl bg-forest-800 hover:bg-forest-900 text-white font-bold text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Neues Gericht Hinzufügen
+          </button>
+        </div>
+
+        <!-- Menu Grid -->
+        <div id="adminMenuGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- JS Populated -->
+        </div>
+
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- TAB 4: EVENTS & VERANSTALTUNGEN -->
+      <!-- ==================================================== -->
+      <section id="tab-events" class="tab-content space-y-6 hidden">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="font-serif font-bold text-xl text-forest-800">Veranstaltungskalender</h3>
+            <p class="text-xs text-slate-500">Planen Sie Themenabende, Tanzkaffee oder saisonale Feste.</p>
+          </div>
+          <button onclick="openEventModal()" class="px-4 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus"></i> Neues Event Erstellen
+          </button>
+        </div>
+
+        <!-- Events Cards Grid -->
+        <div id="adminEventsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- JS Populated -->
+        </div>
+
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- TAB 5: GALERIE & MEDIEN -->
+      <!-- ==================================================== -->
+      <section id="tab-gallery" class="tab-content space-y-6 hidden">
+        
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 class="font-serif font-bold text-xl text-forest-800">Impressionen & Fotogalerie</h3>
+            <p class="text-xs text-slate-500">Laden Sie neue Fotos hoch oder ändern Sie die Bildunterschriften.</p>
+          </div>
+          <button onclick="openGalleryUploadModal()" class="px-4 py-2.5 rounded-xl bg-forest-800 hover:bg-forest-900 text-white font-bold text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-upload"></i> Neues Foto Hochladen
+          </button>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div id="adminGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <!-- JS Populated -->
+        </div>
+
+      </section>
+
+      <!-- ==================================================== -->
+      <!-- TAB 6: EINSTELLUNGEN & ÖFFNUNGSZEITEN -->
+      <!-- ==================================================== -->
+      <section id="tab-settings" class="tab-content space-y-6 hidden">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Opening Hours Settings -->
+          <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+            <h3 class="font-serif font-bold text-xl text-forest-800 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-clock text-terracotta-500"></i> Öffnungszeiten der Gaststätte
+            </h3>
+
+            <div class="space-y-4 text-xs">
+              
+              <div class="grid grid-cols-3 gap-4 items-center">
+                <span class="font-bold text-slate-700">Dienstag – Freitag</span>
+                <input type="text" id="settingHoursWeek" value="11:30 – 18:00 Uhr" class="col-span-2 p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+              <div class="grid grid-cols-3 gap-4 items-center">
+                <span class="font-bold text-slate-700">Samstag (Reibekuchentag)</span>
+                <input type="text" id="settingHoursSat" value="11:30 – 18:00 Uhr" class="col-span-2 p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+              <div class="grid grid-cols-3 gap-4 items-center">
+                <span class="font-bold text-slate-700">Sonntag & Feiertage</span>
+                <input type="text" id="settingHoursSun" value="11:30 – 18:00 Uhr" class="col-span-2 p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+              <div class="grid grid-cols-3 gap-4 items-center">
+                <span class="font-bold text-rose-700">Montag (Ruhetag)</span>
+                <input type="text" id="settingHoursMon" value="Geschlossen / Ruhetag" class="col-span-2 p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+            </div>
+
+            <button onclick="saveSettings()" class="px-5 py-2.5 rounded-xl bg-forest-800 hover:bg-forest-900 text-white font-bold text-xs transition-colors shadow">
+              Öffnungszeiten Speichern
+            </button>
+          </div>
+
+          <!-- Contact & Admin Account Box -->
+          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+            <h3 class="font-serif font-bold text-xl text-forest-800 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-envelope text-terracotta-500"></i> Kontaktdaten & Admin
+            </h3>
+
+            <div class="space-y-4 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Benachrichtigungs-E-Mail</label>
+                <input type="email" value="info@cafe-halle-hagen.de" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Telefonnummer Website</label>
+                <input type="text" value="02331 - 4 34 13" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Passwort ändern</label>
+                <input type="password" placeholder="Neues Passwort" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              </div>
+            </div>
+
+            <button onclick="showToast('Kontaktdaten erfolgreich aktualisiert!')" class="w-full py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-xs transition-colors shadow">
+              Profil Speichern
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ==================================================== -->
+  <!-- MODALS SECTION -->
+  <!-- ==================================================== -->
+
+  <!-- 1. NEW / EDIT RESERVATION MODAL -->
+  <div id="resModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-5 bg-forest-800 text-white flex justify-between items-center">
+        <h3 class="font-serif font-bold text-lg">Reservierung Manuell Eintragen</h3>
+        <button onclick="closeResModal()" class="text-white hover:text-terracotta-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form onsubmit="handleSaveReservation(event)" class="p-6 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Name des Gastes *</label>
+          <input type="text" required id="modalResName" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Telefon *</label>
+            <input type="tel" required id="modalResPhone" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Typ *</label>
+            <select id="modalResType" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              <option value="Tischreservierung">Tischreservierung</option>
+              <option value="Brotbestellung">Brotbestellung</option>
+              <option value="Schnitzeltag">Schnitzeltag</option>
+              <option value="Reibekuchentag">Reibekuchentag</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Datum *</label>
+            <input type="date" required id="modalResDate" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Uhrzeit *</label>
+            <input type="time" required id="modalResTime" value="14:00" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Personen / Menge</label>
+            <input type="text" required id="modalResGuests" value="2 Pers." class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Anmerkungen</label>
+          <textarea id="modalResNotes" rows="2" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="z. B. Biergarten erwünscht..."></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold rounded-xl shadow transition-colors">
+          Eintrag Speichern
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 2. MENU ITEM MODAL (ADD / EDIT) -->
+  <div id="menuItemModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-5 bg-forest-800 text-white flex justify-between items-center">
+        <h3 id="menuModalTitle" class="font-serif font-bold text-lg">Neues Gericht Hinzufügen</h3>
+        <button onclick="closeMenuItemModal()" class="text-white hover:text-terracotta-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form onsubmit="handleSaveMenuItem(event)" class="p-6 space-y-4 text-xs">
+        <input type="hidden" id="modalMenuId">
+        
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Name des Gerichts *</label>
+          <input type="text" required id="modalMenuName" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="z. B. Bergischer Apfelkuchen">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kategorie *</label>
+            <select id="modalMenuCat" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              <option value="kuchen">Kuchen & Torten</option>
+              <option value="deftiges">Deftiges & Klassiker</option>
+              <option value="getraenke">Getränke</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Preis (€) *</label>
+            <input type="text" required id="modalMenuPrice" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="4,50 €">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Beschreibung</label>
+          <textarea id="modalMenuDesc" rows="2" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="Zutaten & Besonderheiten..."></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Badge / Tag (Optional)</label>
+          <input type="text" id="modalMenuBadge" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="z. B. 'Klassiker', 'Tagesempfehlung'">
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-forest-800 hover:bg-forest-900 text-white font-bold rounded-xl shadow transition-colors">
+          Speisekarte Aktualisieren
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 3. EVENT MODAL (ADD / EDIT) -->
+  <div id="eventModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="p-5 bg-forest-800 text-white flex justify-between items-center">
+        <h3 class="font-serif font-bold text-lg">Event Erstellen / Bearbeiten</h3>
+        <button onclick="closeEventModal()" class="text-white hover:text-terracotta-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form onsubmit="handleSaveEvent(event)" class="p-6 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Event Titel *</label>
+          <input type="text" required id="modalEventTitle" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kategorie *</label>
+            <select id="modalEventCat" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+              <option value="saisonal">Saisonal</option>
+              <option value="musik">Tanz & Musik</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Datum Badge (z. B. '12 OKT') *</label>
+            <input type="text" required id="modalEventDate" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Uhrzeit & Ort</label>
+          <input type="text" required id="modalEventTime" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500" placeholder="Ab 12:00 Uhr | Auf der Terrasse">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Beschreibung</label>
+          <textarea id="modalEventDesc" rows="3" class="w-full p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold rounded-xl shadow transition-colors">
+          Event Veröffentlichen
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-forest-800 text-white px-5 py-3 rounded-xl shadow-2xl border border-terracotta-500 flex items-center gap-3 animate-bounce">
+    <i class="fa-solid fa-circle-check text-terracotta-400 text-xl"></i>
+    <span id="toastText" class="text-xs font-semibold">Aktion erfolgreich durchgeführt!</span>
+  </div>
+
+
+  <!-- ==================================================== -->
+  <!-- DASHBOARD JAVASCRIPT LOGIC -->
+  <!-- ==================================================== -->
+  <script>
+    // INITIAL MOCK DATA (Saved in LocalStorage for persistence)
+    const initialReservations = [
+      { id: 101, name: 'Familie Weber', phone: '02331 / 987654', type: 'Tischreservierung', date: '2026-10-02', time: '14:30', guests: '4 Personen', notes: 'Platz im Biergarten gewünscht', status: 'Ausstehend' },
+      { id: 102, name: 'Bettina Sauer', phone: '0172 / 1234567', type: 'Brotbestellung', date: '2026-10-08', time: '15:00', guests: '2x Dinkel, 1x Malz', notes: 'Abholung Nachmittag', status: 'Bestätigt' },
+      { id: 103, name: 'Klaus Lindner', phone: '02331 / 443322', type: 'Schnitzeltag', date: '2026-10-01', time: '17:30', guests: '2 Personen', notes: 'Jägerschnitzel', status: 'Bestätigt' },
+      { id: 104, name: 'Monika Schmitz', phone: '02331 / 778899', type: 'Reibekuchentag', date: '2026-10-03', time: '12:00', guests: '3 Personen', notes: 'Mit Lachs', status: 'Ausstehend' },
+      { id: 105, name: 'Dr. Thomas Meyer', phone: '0160 / 998877', type: 'Tischreservierung', date: '2026-10-04', time: '15:30', guests: '6 Personen', notes: 'Geburtstag', status: 'Storniert' }
+    ];
+
+    const initialMenuItems = [
+      { id: 1, category: 'kuchen', name: 'Hausgemachte Stachelbeer-Baiser-Torte', desc: 'Erfrischend-fruchtig mit krosser Baiserhaube nach Geheimrezept.', price: '4,20 €', badge: 'Klassiker', available: true },
+      { id: 2, category: 'kuchen', name: 'Warmer Apfelkuchen mit Vanilleeis', desc: 'Mit Mandeln verfeinert und frisch geschlagener Schlagsahne.', price: '4,50 €', badge: 'Empfehlung', available: true },
+      { id: 3, category: 'deftiges', name: 'Knusprige Reibekuchen (3 Stück)', desc: 'Serviert mit süßem Apfelkompott oder kühlem Kräuterquark.', price: '8,90 €', badge: 'Jeden Samstag', available: true },
+      { id: 4, category: 'deftiges', name: 'Jägerschnitzel mit Pommes', desc: 'Zartes Schweineschnitzel mit pikanter Waldpilzsauce und Salat.', price: '14,80 €', badge: 'Donnerstag 9,49 €', available: true },
+      { id: 5, category: 'getraenke', name: 'Pott Bohnenkaffee / Cappuccino', desc: 'Frisch gemahlen aus edlen Röstbohnen.', price: '3,20 €', badge: '', available: true }
+    ];
+
+    const initialEvents = [
+      { id: 1, title: 'Hagener Wald-Oktoberfest', category: 'saisonal', dateBadge: '12 OKT', time: 'Ab 12:00 Uhr | Alm-Terrasse', desc: 'Bayerische Schmankerl, frisch gezapftes Festbier und zünftige Stimmung mitten im Grünen.' },
+      { id: 2, title: 'Gemütlicher Tanzkaffee', category: 'musik', dateBadge: 'SO Jeden 2.', time: '14:30 – 17:30 Uhr | Saal', desc: 'Gute Musik, frischer Bohnenkaffee und leckere Torten.' },
+      { id: 3, title: 'Traditionelles Gänseessen', category: 'saisonal', dateBadge: '08 NOV', time: 'Ab 17:00 Uhr | Voranmeldung', desc: 'Frisch gebratene Keule & Brust mit Rotkohl, Klößen und kräftiger Sauce.' }
+    ];
+
+    const initialGallery = [
+      { id: 1, src: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80', caption: 'Biergarten im Grünen' },
+      { id: 2, src: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80', caption: 'Hausgemachte Torten' },
+      { id: 3, src: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80', caption: 'Frisches Holzofenbrot' },
+      { id: 4, src: 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=600&q=80', caption: 'Gemütlicher Gastraum' }
+    ];
+
+    // State Variables
+    let reservations = JSON.parse(localStorage.getItem('cafeHalle_res')) || initialReservations;
+    let menuList = JSON.parse(localStorage.getItem('cafeHalle_menu')) || initialMenuItems;
+    let eventsList = JSON.parse(localStorage.getItem('cafeHalle_events')) || initialEvents;
+    let galleryList = JSON.parse(localStorage.getItem('cafeHalle_gallery')) || initialGallery;
+
+    // DOM Ready Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      switchTab('dashboard');
+      renderDashboard();
+      renderReservationsTable('all');
+      renderMenuAdmin();
+      renderEventsAdmin();
+      renderGalleryAdmin();
+    });
+
+    // Save State Helper
+    function saveState() {
+      localStorage.setItem('cafeHalle_res', JSON.stringify(reservations));
+      localStorage.setItem('cafeHalle_menu', JSON.stringify(menuList));
+      localStorage.setItem('cafeHalle_events', JSON.stringify(eventsList));
+      localStorage.setItem('cafeHalle_gallery', JSON.stringify(galleryList));
+    }
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('nav-item-active'));
+
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      
+      if (activeTab) activeTab.classList.remove('hidden');
+      if (activeNav) activeNav.classList.add('nav-item-active');
+
+      const titles = {
+        dashboard: 'Übersicht & KPIs',
+        reservations: 'Reservierungs- & Brotverwaltung',
+        menu: 'Speisekarten-Manager',
+        events: 'Veranstaltungen & Termine',
+        gallery: 'Galerie & Impressionen',
+        settings: 'System-Einstellungen & Öffnungszeiten'
+      };
+      document.getElementById('pageTitle').textContent = titles[tabId] || 'Admin Panel';
+
+      // Mobile Sidebar auto close
+      if (window.innerWidth < 1024) {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    }
+
+    // TOAST NOTIFICATION
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastText').textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    }
+
+    // WEBSITE STATUS TOGGLE
+    let isNormalOpen = true;
+    function toggleWebsiteStatus() {
+      isNormalOpen = !isNormalOpen;
+      const btn = document.getElementById('statusToggleBtn');
+      const text = document.getElementById('statusToggleText');
+
+      if (isNormalOpen) {
+        btn.className = "flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+        text.textContent = "Normal Geöffnet";
+        showToast("Website-Status auf 'Normal Geöffnet' gesetzt.");
+      } else {
+        btn.className = "flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300";
+        text.textContent = "Notfall / Geschlossen";
+        showToast("Achtung: Website zeigt jetzt Notfall-Schließung an.");
+      }
+    }
+
+    function setGlobalNotice(type) {
+      if (type === 'Ausgebucht') {
+        showToast("Hinweis 'Heute Ausgebucht' wurde auf Website geschaltet.");
+      } else if (type === 'Regen') {
+        showToast("Hinweis 'Nur Innenbereich' wurde geschaltet.");
+      } else {
+        showToast("Status zurückgesetzt.");
+      }
+    }
+
+    // 1. DASHBOARD LOGIC
+    function renderDashboard() {
+      // Stats counts
+      const pendingCount = reservations.filter(r => r.status === 'Ausstehend').length;
+      document.getElementById('pendingBadgeCount').textContent = pendingCount;
+      document.getElementById('statTodayRes').textContent = `${reservations.length} Anfragen`;
+
+      // Render Recent Table (Limit 4)
+      const tbody = document.getElementById('recentTableBody');
+      const recent = reservations.slice(0, 4);
+
+      tbody.innerHTML = recent.map(r => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="p-4 font-bold text-slate-800">
+            ${r.name}
+            <span class="block text-[10px] text-slate-400 font-normal">${r.phone}</span>
+          </td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${r.type}</span>
+          </td>
+          <td class="p-4 text-slate-600">${r.date} | ${r.time} Uhr</td>
+          <td class="p-4 text-slate-600">${r.guests}</td>
+          <td class="p-4">${getStatusBadge(r.status)}</td>
+          <td class="p-4 text-right space-x-1">
+            ${r.status === 'Ausstehend' ? `
+              <button onclick="changeResStatus(${r.id}, 'Bestätigt')" class="p-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-xs" title="Bestätigen"><i class="fa-solid fa-check"></i></button>
+              <button onclick="changeResStatus(${r.id}, 'Storniert')" class="p-1.5 bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-lg text-xs" title="Stornieren"><i class="fa-solid fa-xmark"></i></button>
+            ` : `<span class="text-[10px] text-slate-400">Erledigt</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'Bestätigt') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Bestätigt</span>`;
+      } else if (status === 'Ausstehend') {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Ausstehend</span>`;
+      } else {
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Storniert</span>`;
+      }
+    }
+
+    // 2. RESERVATIONS MANAGEMENT LOGIC
+    function renderReservationsTable(filter = 'all', searchQuery = '') {
+      const tbody = document.getElementById('fullResTableBody');
+      
+      let filtered = reservations;
+      if (filter !== 'all') {
+        filtered = filtered.filter(r => r.type === filter);
+      }
+      if (searchQuery) {
+        filtered = filtered.filter(r => r.name.toLowerCase().includes(searchQuery) || r.phone.includes(searchQuery));
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Keine Reservierungen gefunden.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="p-4 font-bold text-slate-800">
+            ${r.name}
+            <span class="block text-[10px] text-slate-400 font-normal">${r.phone}</span>
+          </td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cream-200 text-forest-800">${r.type}</span></td>
+          <td class="p-4 text-slate-600">${r.date}<br><span class="text-[10px] text-slate-400">${r.time} Uhr</span></td>
+          <td class="p-4 font-medium text-slate-700">${r.guests}</td>
+          <td class="p-4 text-slate-500 max-w-xs truncate">${r.notes || '-'}</td>
+          <td class="p-4">${getStatusBadge(r.status)}</td>
+          <td class="p-4 text-right space-x-1">
+            <button onclick="changeResStatus(${r.id}, 'Bestätigt')" class="px-2 py-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded text-[10px] font-bold">Bestätigen</button>
+            <button onclick="changeResStatus(${r.id}, 'Storniert')" class="px-2 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded text-[10px] font-bold">Storno</button>
+            <button onclick="deleteReservation(${r.id})" class="p-1 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterReservations(type) {
+      document.querySelectorAll('.res-filter-btn').forEach(b => {
+        b.className = "res-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100";
+      });
+      event.target.className = "res-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-forest-800 text-white";
+      renderReservationsTable(type);
+    }
+
+    function searchReservations() {
+      const q = document.getElementById('resSearchInput').value.toLowerCase();
+      renderReservationsTable('all', q);
+    }
+
+    function changeResStatus(id, newStatus) {
+      const target = reservations.find(r => r.id === id);
+      if (target) {
+        target.status = newStatus;
+        saveState();
+        renderDashboard();
+        renderReservationsTable();
+        showToast(`Status auf '${newStatus}' geändert.`);
+      }
+    }
+
+    function deleteReservation(id) {
+      if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+        reservations = reservations.filter(r => r.id !== id);
+        saveState();
+        renderDashboard();
+        renderReservationsTable();
+        showToast("Eintrag gelöscht.");
+      }
+    }
+
+    // Modal Add Reservation
+    function openNewResModal() {
+      document.getElementById('resModal').classList.remove('hidden');
+    }
+    function closeResModal() {
+      document.getElementById('resModal').classList.add('hidden');
+    }
+    function handleSaveReservation(e) {
+      e.preventDefault();
+      const newRes = {
+        id: Date.now(),
+        name: document.getElementById('modalResName').value,
+        phone: document.getElementById('modalResPhone').value,
+        type: document.getElementById('modalResType').value,
+        date: document.getElementById('modalResDate').value,
+        time: document.getElementById('modalResTime').value,
+        guests: document.getElementById('modalResGuests').value,
+        notes: document.getElementById('modalResNotes').value,
+        status: 'Bestätigt'
+      };
+      reservations.unshift(newRes);
+      saveState();
+      renderDashboard();
+      renderReservationsTable();
+      closeResModal();
+      showToast("Reservierung erfolgreich hinzugefügt!");
+    }
+
+    // 3. MENU MANAGER LOGIC
+    function renderMenuAdmin() {
+      const grid = document.getElementById('adminMenuGrid');
+      grid.innerHTML = menuList.map(item => `
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded">${item.category}</span>
+              <span class="font-serif font-bold text-forest-800 text-base">${item.price}</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg text-forest-800">${item.name}</h4>
+            <p class="text-xs text-slate-500 mt-1">${item.desc}</p>
+            ${item.badge ? `<span class="inline-block mt-2 px-2 py-0.5 bg-terracotta-500/10 text-terracotta-600 text-[10px] font-bold rounded">${item.badge}</span>` : ''}
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <label class="flex items-center space-x-2 cursor-pointer text-xs">
+              <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleMenuItemAvailability(${item.id})" class="accent-forest-800">
+              <span class="${item.available ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}">${item.available ? 'Verfügbar' : 'Ausverkauft'}</span>
+            </label>
+            <div class="space-x-1">
+              <button onclick="deleteMenuItem(${item.id})" class="p-1.5 text-slate-400 hover:text-rose-600 rounded"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleMenuItemAvailability(id) {
+      const item = menuList.find(m => m.id === id);
+      if (item) {
+        item.available = !item.available;
+        saveState();
+        renderMenuAdmin();
+        showToast(`Verfügbarkeit von '${item.name}' geändert.`);
+      }
+    }
+
+    function openMenuItemModal() {
+      document.getElementById('menuItemModal').classList.remove('hidden');
+    }
+    function closeMenuItemModal() {
+      document.getElementById('menuItemModal').classList.add('hidden');
+    }
+    function handleSaveMenuItem(e) {
+      e.preventDefault();
+      const newItem = {
+        id: Date.now(),
+        name: document.getElementById('modalMenuName').value,
+        category: document.getElementById('modalMenuCat').value,
+        price: document.getElementById('modalMenuPrice').value,
+        desc: document.getElementById('modalMenuDesc').value,
+        badge: document.getElementById('modalMenuBadge').value,
+        available: true
+      };
+      menuList.push(newItem);
+      saveState();
+      renderMenuAdmin();
+      closeMenuItemModal();
+      showToast("Gericht zur Speisekarte hinzugefügt!");
+    }
+    function deleteMenuItem(id) {
+      if (confirm('Gericht aus der Karte entfernen?')) {
+        menuList = menuList.filter(m => m.id !== id);
+        saveState();
+        renderMenuAdmin();
+        showToast("Gericht gelöscht.");
+      }
+    }
+
+    // 4. EVENTS MANAGER LOGIC
+    function renderEventsAdmin() {
+      const grid = document.getElementById('adminEventsGrid');
+      grid.innerHTML = eventsList.map(ev => `
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="px-2.5 py-1 bg-forest-800 text-white font-serif font-bold text-xs rounded-lg">${ev.dateBadge}</span>
+              <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full uppercase">${ev.category}</span>
+            </div>
+            <h4 class="font-serif font-bold text-lg text-forest-800 mb-1">${ev.title}</h4>
+            <p class="text-[11px] font-semibold text-terracotta-600 mb-2"><i class="fa-regular fa-clock mr-1"></i> ${ev.time}</p>
+            <p class="text-xs text-slate-600 leading-relaxed">${ev.desc}</p>
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex justify-end space-x-2">
+            <button onclick="deleteEvent(${ev.id})" class="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg text-xs font-bold transition-colors">Löschen</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openEventModal() {
+      document.getElementById('eventModal').classList.remove('hidden');
+    }
+    function closeEventModal() {
+      document.getElementById('eventModal').classList.add('hidden');
+    }
+    function handleSaveEvent(e) {
+      e.preventDefault();
+      const newEv = {
+        id: Date.now(),
+        title: document.getElementById('modalEventTitle').value,
+        category: document.getElementById('modalEventCat').value,
+        dateBadge: document.getElementById('modalEventDate').value,
+        time: document.getElementById('modalEventTime').value,
+        desc: document.getElementById('modalEventDesc').value
+      };
+      eventsList.push(newEv);
+      saveState();
+      renderEventsAdmin();
+      closeEventModal();
+      showToast("Event erfolgreich veröffentlicht!");
+    }
+    function deleteEvent(id) {
+      if (confirm('Event wirklich löschen?')) {
+        eventsList = eventsList.filter(e => e.id !== id);
+        saveState();
+        renderEventsAdmin();
+        showToast("Event gelöscht.");
+      }
+    }
+
+    // 5. GALLERY MANAGER LOGIC
+    function renderGalleryAdmin() {
+      const grid = document.getElementById('adminGalleryGrid');
+      grid.innerHTML = galleryList.map(img => `
+        <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+          <img src="${img.src}" class="w-full h-40 object-cover">
+          <div class="p-3">
+            <p class="text-xs font-bold text-forest-800 truncate">${img.caption}</p>
+            <button onclick="deleteGalleryImage(${img.id})" class="mt-2 text-[10px] text-rose-600 font-bold hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-trash"></i> Entfernen
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openGalleryUploadModal() {
+      const url = prompt("Bitte Bild-URL eingeben (z. B. Unsplash):", "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=600&q=80");
+      if (url) {
+        const caption = prompt("Bildunterschrift:", "Neue Impression Café Halle");
+        galleryList.push({ id: Date.now(), src: url, caption: caption || 'Café Halle' });
+        saveState();
+        renderGalleryAdmin();
+        showToast("Foto zur Galerie hinzugefügt!");
+      }
+    }
+
+    function deleteGalleryImage(id) {
+      if (confirm('Foto aus der Galerie löschen?')) {
+        galleryList = galleryList.filter(g => g.id !== id);
+        saveState();
+        renderGalleryAdmin();
+        showToast("Foto gelöscht.");
+      }
+    }
+
+    // 6. SETTINGS LOGIC
+    function saveSettings() {
+      showToast("Öffnungszeiten erfolgreich gespeichert!");
+    }
+  </script>
+</body>
+</html>
