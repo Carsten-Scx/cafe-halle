@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Halle | Waldgaststätte & Bauerncafé Hagen</title>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Playfair Display (Serif) & Plus Jakarta Sans (Sans-Serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#f2f7f4',
+              100: '#e1ede6',
+              700: '#28523c',
+              800: '#1b3b2b', // Primary deep forest green
+              900: '#12291e',
+            },
+            terracotta: {
+              400: '#d98e43',
+              500: '#c87d32', // Warm gold / terracotta
+              600: '#ac6422',
+            },
+            cream: {
+              50: '#ffffff',
+              100: '#fbf9f5', // Warm light cream
+              200: '#f4efe6',
+              300: '#e8decb',
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbf9f5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1b3b2b;
+      border-radius: 4px;
+    }
+
+    /* Soft Glow & Transitions */
+    .glass-nav {
+      background: rgba(27, 59, 43, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .hero-gradient {
+      background: linear-gradient(180deg, rgba(18, 41, 30, 0.65) 0%, rgba(27, 59, 43, 0.85) 100%),
+                  url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    }
+
+    .wood-pattern {
+      background-color: #1b3b2b;
+      background-image: radial-gradient(rgba(200, 125, 50, 0.1) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* Modal Animation */
+    .modal-backdrop {
+      background-color: rgba(18, 41, 30, 0.7);
+      backdrop-filter: blur(6px);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal-content {
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+
+    /* Tab indicator underline */
+    .tab-active {
+      border-bottom: 3px solid #c87d32;
+      color: #1b3b2b;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body class="bg-cream-100 text-slate-800 font-sans antialiased selection:bg-terracotta-500 selection:text-white">
+
+  <!-- Top Bar / Emergency Info & Open Status -->
+  <div class="bg-forest-900 text-cream-200 text-xs py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-4">
+        <span><i class="fa-solid fa-location-dot text-terracotta-500 mr-1.5"></i> Auf der Halle 12, 58135 Hagen</span>
+        <span class="hidden sm:inline"><i class="fa-solid fa-phone text-terracotta-500 mr-1.5"></i> 02331 - 4 34 13</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <!-- Live Status Badge -->
+        <span id="openStatusBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300">
+          <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> JETZT GEÖFFNET
+        </span>
+        <span class="text-cream-300 hidden md:inline">Di - So: 11:30 - 18:00 Uhr</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live-Hinweis aus dem Admin-Bereich -->
+  <div id="siteNotice" class="hidden text-center text-sm font-semibold py-2.5 px-4"></div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="sticky top-0 z-40 glass-nav text-white shadow-lg transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        
+        <!-- Logo -->
+        <a href="#" class="group flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-full bg-terracotta-500 text-white flex items-center justify-center font-serif text-2xl font-bold shadow-md group-hover:scale-105 transition-transform">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <div>
+            <span class="font-serif text-2xl font-bold tracking-wide block text-cream-50 leading-tight">CAFÉ HALLE</span>
+            <span class="text-xs text-cream-300 uppercase tracking-widest font-medium block">Waldgaststätte & Bauerncafé</span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <div class="hidden lg:flex items-center space-x-8 text-sm font-medium">
+          <a href="#about" class="text-cream-200 hover:text-terracotta-400 transition-colors">Über Uns</a>
+          <a href="#highlights" class="text-cream-200 hover:text-terracotta-400 transition-colors">Highlights</a>
+          <button onclick="openMenuModal('all')" class="text-cream-200 hover:text-terracotta-400 transition-colors">Speisekarte</button>
+          <a href="#events" class="text-cream-200 hover:text-terracotta-400 transition-colors">Veranstaltungen</a>
+          <a href="#gallery" class="text-cream-200 hover:text-terracotta-400 transition-colors">Galerie</a>
+          <a href="#contact" class="text-cream-200 hover:text-terracotta-400 transition-colors">Anfahrt & Kontakt</a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="hidden sm:flex items-center space-x-3">
+          <button onclick="openMenuModal('all')" class="px-4 py-2.5 rounded-lg border border-terracotta-500/50 text-cream-100 hover:bg-forest-700 transition-all text-sm font-semibold">
+            <i class="fa-solid fa-utensils mr-1.5 text-terracotta-400"></i> Karte
+          </button>
+          <button onclick="openReservationModal()" class="px-5 py-2.5 rounded-lg bg-terracotta-500 hover:bg-terracotta-600 text-white shadow-md hover:shadow-lg transition-all text-sm font-bold flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check"></i> Tisch / Brot Reservieren
+          </button>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-md text-cream-200 hover:text-white hover:bg-forest-700 focus:outline-none">
+          <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-forest-900 border-t border-forest-700 px-4 pt-3 pb-6 space-y-3">
+      <a href="#about" onclick="toggleMobileMenu()" class="block text-cream-200 py-2 border-b border-forest-800">Über Uns</a>
+      <a href="#highlights" onclick="toggleMobileMenu()" class="block text-cream-200 py-2 border-b border-forest-800">Highlights</a>
+      <button onclick="toggleMobileMenu(); openMenuModal('all')" class="block w-full text-left text-cream-200 py-2 border-b border-forest-800">Speisekarte</button>
+      <a href="#events" onclick="toggleMobileMenu()" class="block text-cream-200 py-2 border-b border-forest-800">Veranstaltungen</a>
+      <a href="#gallery" onclick="toggleMobileMenu()" class="block text-cream-200 py-2 border-b border-forest-800">Galerie</a>
+      <a href="#contact" onclick="toggleMobileMenu()" class="block text-cream-200 py-2 border-b border-forest-800">Anfahrt & Kontakt</a>
+      
+      <div class="pt-2 grid grid-cols-2 gap-2">
+        <button onclick="toggleMobileMenu(); openMenuModal('all')" class="w-full py-2.5 rounded-lg border border-terracotta-500 text-cream-100 text-center font-medium text-sm">
+          Speisekarte
+        </button>
+        <button onclick="toggleMobileMenu(); openReservationModal()" class="w-full py-2.5 rounded-lg bg-terracotta-500 text-white font-bold text-center text-sm shadow">
+          Reservieren
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative hero-gradient text-white py-24 md:py-36 px-4 overflow-hidden">
+    <!-- Decorative Rustic Blur Effect -->
+    <div class="absolute -top-12 -left-12 w-64 h-64 bg-terracotta-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-12 -right-12 w-80 h-80 bg-forest-700/30 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <span class="inline-block px-4 py-1.5 rounded-full bg-terracotta-500/30 border border-terracotta-400/40 text-terracotta-300 font-medium text-xs md:text-sm tracking-wider uppercase mb-6 shadow-sm">
+        <i class="fa-solid fa-wheat-awn mr-1.5"></i> Traditionelle Gastfreundschaft seit Generationen
+      </span>
+      
+      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-cream-50 drop-shadow-md">
+        Natur, Genuss & ländliche Gemütlichkeit in Hagen.
+      </h1>
+      
+      <p class="text-base sm:text-lg md:text-xl text-cream-200 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+        Genießen Sie hausgemachte Torten, ofenfrisches Holzofenbrot, deftige Reibekuchen und sonnige Stunden in unserem idyllischen Waldgarten.
+      </p>
+
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+        <button onclick="openReservationModal()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
+          <i class="fa-solid fa-utensils"></i> Tisch & Brot Reservieren
+        </button>
+        <button onclick="openMenuModal('all')" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold text-lg transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-book-open"></i> Speisekarte Entdecken
+        </button>
+      </div>
+
+      <!-- Quick Feature Badges -->
+      <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-8 max-w-3xl mx-auto text-left">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-terracotta-500/20 flex items-center justify-center text-terracotta-400 font-bold shrink-0">
+            <i class="fa-solid fa-mug-hot"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-cream-100">Bauerncafé</h4>
+            <p class="text-xs text-cream-300">Hausgemachter Kuchen</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-terracotta-500/20 flex items-center justify-center text-terracotta-400 font-bold shrink-0">
+            <i class="fa-solid fa-bread-slice"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-cream-100">Brotbacken</h4>
+            <p class="text-xs text-cream-300">Alle 2 Wochen Frische</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-terracotta-500/20 flex items-center justify-center text-terracotta-400 font-bold shrink-0">
+            <i class="fa-solid fa-champagne-glasses"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-cream-100">Events & Feiern</h4>
+            <p class="text-xs text-cream-300">Platz für Anlässe</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-terracotta-500/20 flex items-center justify-center text-terracotta-400 font-bold shrink-0">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-cream-100">Waldgarten</h4>
+            <p class="text-xs text-cream-300">Entspannen im Grünen</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About & Experience Section -->
+  <section id="about" class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      
+      <!-- Left Image Grid -->
+      <div class="relative">
+        <div class="grid grid-cols-2 gap-4">
+          <img src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=600&q=80" alt="Café Atmosphäre" class="rounded-2xl shadow-lg object-cover h-64 w-full hover:scale-[1.02] transition-transform duration-300">
+          <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80" alt="Frisches Brot" class="rounded-2xl shadow-lg object-cover h-64 w-full mt-8 hover:scale-[1.02] transition-transform duration-300">
+        </div>
+        <!-- Floating Rustic Card -->
+        <div class="absolute -bottom-6 -right-2 sm:right-6 bg-forest-800 text-white p-5 rounded-2xl shadow-xl max-w-xs border border-forest-700">
+          <div class="flex items-center space-x-3 mb-2">
+            <i class="fa-solid fa-award text-terracotta-400 text-2xl"></i>
+            <span class="font-serif font-bold text-lg">Qualität & Herz</span>
+          </div>
+          <p class="text-xs text-cream-200 leading-snug">
+            Zutaten aus der Region, traditionelle Rezepte und ein Lächeln für jeden Gast.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Description Content -->
+      <div>
+        <span class="text-terracotta-500 font-bold uppercase tracking-wider text-xs block mb-2">Echte Gastfreundschaft</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest-800 mb-6 leading-tight">
+          Ihr Ausflugsziel im Grünen: Die Waldgaststätte Café Halle
+        </h2>
+        <p class="text-slate-600 mb-4 leading-relaxed">
+          Versteckt im malerischen Grün von Hagen empfängt Sie das Café Halle mit idyllischer Waldatmosphäre, herzhaften Kulinarik-Highlights und frischem Duft aus dem Backhaus.
+        </p>
+        <p class="text-slate-600 mb-8 leading-relaxed">
+          Ob Radfahrer, Wanderer oder Familien – bei uns finden Sie den perfekten Ort für eine kleine Auszeit. Genießen Sie unsere berühmten Reibekuchen, ein kühles Getränk im Biergarten oder lassen Sie sich von unserer großen Kuchenauswahl verzaubern.
+        </p>
+
+        <!-- Highlights Bullet List -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <div class="flex items-start space-x-3">
+            <i class="fa-solid fa-circle-check text-terracotta-500 mt-1"></i>
+            <span class="text-sm font-semibold text-slate-700">Großer Wald-Biergarten</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <i class="fa-solid fa-circle-check text-terracotta-500 mt-1"></i>
+            <span class="text-sm font-semibold text-slate-700">Brotbacken aus dem Holzofen</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <i class="fa-solid fa-circle-check text-terracotta-500 mt-1"></i>
+            <span class="text-sm font-semibold text-slate-700">Schnitzel- & Reibekuchentage</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <i class="fa-solid fa-circle-check text-terracotta-500 mt-1"></i>
+            <span class="text-sm font-semibold text-slate-700">Räumlichkeiten für Events</span>
+          </div>
+        </div>
+
+        <button onclick="openReservationModal()" class="px-6 py-3 rounded-lg bg-forest-800 hover:bg-forest-900 text-white font-bold shadow-md hover:shadow-lg transition-all text-sm inline-flex items-center gap-2">
+          <i class="fa-solid fa-calendar-days"></i> Tisch im Grünen buchen
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Weekly Culinary Highlights Section -->
+  <section id="highlights" class="bg-cream-200/60 py-20 px-4 border-y border-cream-300/50">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="text-terracotta-500 font-bold uppercase tracking-wider text-xs block mb-2">Kulinarischer Kalender</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest-800 mb-4">Unsere wöchentlichen Spezialitäten</h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          Frisch zubereitet, reichhaltig und nach bewährten Hausrezepten. Sichern Sie sich rechtzeitig einen Platz!
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Highlight 1: Schnitzeltag -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-cream-300/60 flex flex-col group">
+          <div class="relative h-48 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Schnitzel Spezialität" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute top-3 right-3 bg-terracotta-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+              Jeden Donnerstag
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-semibold text-terracotta-600 mb-1"><i class="fa-regular fa-clock"></i> 17:30 – 20:00 Uhr</div>
+              <h3 class="font-serif text-2xl font-bold text-forest-800 mb-2">Schnitzel-Abend</h3>
+              <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                Knuspriges Jäger- oder Paprikaschnitzel mit goldgelben Pommes & frischem Beilagensalat.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="font-serif text-2xl font-bold text-forest-800">9,49 € <span class="text-xs text-slate-400 font-normal">/ Portion</span></span>
+              <button onclick="openReservationModal('Schnitzeltag')" class="px-4 py-2 bg-forest-800 hover:bg-forest-900 text-white text-xs font-bold rounded-lg transition-colors">
+                Vorbestellen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlight 2: Reibekuchentag -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-cream-300/60 flex flex-col group">
+          <div class="relative h-48 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80" alt="Reibekuchen" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute top-3 right-3 bg-terracotta-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+              Jeden Samstag
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-semibold text-terracotta-600 mb-1"><i class="fa-regular fa-clock"></i> 11:30 – 14:00 Uhr</div>
+              <h3 class="font-serif text-2xl font-bold text-forest-800 mb-2">Traditioneller Reibekuchentag</h3>
+              <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                Goldbraun ausgebackene Reibekuchen nach altem Rezept, serviert mit Apfelmus oder frischem Lachs.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                <i class="fa-solid fa-fire"></i> Beliebt
+              </span>
+              <button onclick="openReservationModal('Reibekuchentag')" class="px-4 py-2 bg-forest-800 hover:bg-forest-900 text-white text-xs font-bold rounded-lg transition-colors">
+                Tisch Buchen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Highlight 3: Brotbacken -->
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-cream-300/60 flex flex-col group">
+          <div class="relative h-48 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80" alt="Bauernbrot" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute top-3 right-3 bg-forest-800 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+              Alle 2 Wochen (Do)
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-semibold text-terracotta-600 mb-1"><i class="fa-regular fa-clock"></i> Abholung 14:30 – 18:00 Uhr</div>
+              <h3 class="font-serif text-2xl font-bold text-forest-800 mb-2">Frisches Brotbacken</h3>
+              <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                Ofenfrische Spezialbrote (Dinkel, Malz, Bärlauch) & süßer Stuten direkt aus der Backstube.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-slate-500 font-medium">Auf Vorbestellung</span>
+              <button onclick="openReservationModal('Brotbestellung')" class="px-4 py-2 bg-terracotta-500 hover:bg-terracotta-600 text-white text-xs font-bold rounded-lg transition-colors shadow">
+                Brot Vorbestellen
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Events & Seasonal Special Section -->
+  <section id="events" class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+      <div>
+        <span class="text-terracotta-500 font-bold uppercase tracking-wider text-xs block mb-2">Feste & Veranstaltungen</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest-800">Aktuelle Termine im Café Halle</h2>
+      </div>
+      
+      <!-- Filter Tabs -->
+      <div class="mt-6 md:mt-0 flex gap-2 overflow-x-auto pb-2">
+        <button onclick="filterEvents('all')" class="event-filter-btn active px-4 py-2 rounded-full text-xs font-bold bg-forest-800 text-white transition-all">Alle Termine</button>
+        <button onclick="filterEvents('saisonal')" class="event-filter-btn px-4 py-2 rounded-full text-xs font-bold bg-cream-200 text-slate-700 hover:bg-forest-800 hover:text-white transition-all">Saisonal</button>
+        <button onclick="filterEvents('musik')" class="event-filter-btn px-4 py-2 rounded-full text-xs font-bold bg-cream-200 text-slate-700 hover:bg-forest-800 hover:text-white transition-all">Tanz & Musik</button>
+      </div>
+    </div>
+
+    <!-- Event Cards Grid -->
+    <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Event Item 1 -->
+      <div class="event-card saisonal bg-white rounded-2xl p-6 border border-cream-300/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <div class="bg-terracotta-500/10 text-terracotta-600 font-serif font-bold text-center px-3 py-1.5 rounded-lg border border-terracotta-500/20">
+              <span class="block text-xl leading-none">12</span>
+              <span class="text-xs uppercase">OKT</span>
+            </div>
+            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">Oktoberfest</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest-800 mb-2">Hagener Wald-Oktoberfest</h3>
+          <p class="text-xs text-slate-500 mb-3"><i class="fa-regular fa-clock mr-1"></i> Ab 12:00 Uhr | Auf der Alm-Terrasse</p>
+          <p class="text-slate-600 text-sm mb-6">
+            Bayerische Schmankerl, frisch gezapftes Festbier und zünftige Stimmung mitten im Grünen.
+          </p>
+        </div>
+        <button onclick="openReservationModal('Oktoberfest')" class="w-full py-2 bg-cream-200 hover:bg-forest-800 hover:text-white text-forest-800 font-bold text-xs rounded-lg transition-colors">
+          Platz Sichern
+        </button>
+      </div>
+
+      <!-- Event Item 2 -->
+      <div class="event-card musik bg-white rounded-2xl p-6 border border-cream-300/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <div class="bg-forest-800/10 text-forest-800 font-serif font-bold text-center px-3 py-1.5 rounded-lg border border-forest-800/20">
+              <span class="block text-xl leading-none">SO</span>
+              <span class="text-xs uppercase">Jeden 2.</span>
+            </div>
+            <span class="px-2.5 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full">Tanzkaffee</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest-800 mb-2">Gemütlicher Tanzkaffee</h3>
+          <p class="text-xs text-slate-500 mb-3"><i class="fa-regular fa-clock mr-1"></i> 14:30 – 17:30 Uhr | SaaI</p>
+          <p class="text-slate-600 text-sm mb-6">
+            Gute Musik, frischer Bohnenkaffee und leckere Torten – ideal für unbeschwerte Nachmittage.
+          </p>
+        </div>
+        <button onclick="openReservationModal('Tanzkaffee')" class="w-full py-2 bg-cream-200 hover:bg-forest-800 hover:text-white text-forest-800 font-bold text-xs rounded-lg transition-colors">
+          Tisch Reservieren
+        </button>
+      </div>
+
+      <!-- Event Item 3 -->
+      <div class="event-card saisonal bg-white rounded-2xl p-6 border border-cream-300/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <div class="bg-terracotta-500/10 text-terracotta-600 font-serif font-bold text-center px-3 py-1.5 rounded-lg border border-terracotta-500/20">
+              <span class="block text-xl leading-none">08</span>
+              <span class="text-xs uppercase">NOV</span>
+            </div>
+            <span class="px-2.5 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">Gänseessen</span>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest-800 mb-2">Traditionelles Gänseessen</h3>
+          <p class="text-xs text-slate-500 mb-3"><i class="fa-regular fa-clock mr-1"></i> Ab 17:00 Uhr | Nur mit Voranmeldung</p>
+          <p class="text-slate-600 text-sm mb-6">
+            Frisch gebratene Keule & Brust mit Rotkohl, Klößen und kräftiger Sauce.
+          </p>
+        </div>
+        <button onclick="openReservationModal('Gänseessen')" class="w-full py-2 bg-cream-200 hover:bg-forest-800 hover:text-white text-forest-800 font-bold text-xs rounded-lg transition-colors">
+          Platz Sichern
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Photo Gallery Preview Section -->
+  <section id="gallery" class="py-20 bg-forest-900 text-white px-4">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-terracotta-400 font-bold uppercase tracking-wider text-xs block mb-2">Eindrücke</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-cream-50 mb-4">Impressionen aus dem Café Halle</h2>
+        <p class="text-cream-300 text-sm sm:text-base">
+          Werfen Sie einen Blick in unsere gemütliche Gaststube und den idyllischen Außenbereich.
+        </p>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        
+        <div class="relative group cursor-pointer overflow-hidden rounded-xl h-48 sm:h-64" onclick="openLightbox('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80', 'Biergarten im Grünen')">
+          <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80" alt="Biergarten" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <div class="absolute inset-0 bg-forest-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass-plus text-2xl text-white"></i>
+          </div>
+        </div>
+
+        <div class="relative group cursor-pointer overflow-hidden rounded-xl h-48 sm:h-64" onclick="openLightbox('https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80', 'Hausgemachte Torten')">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80" alt="Torte" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <div class="absolute inset-0 bg-forest-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass-plus text-2xl text-white"></i>
+          </div>
+        </div>
+
+        <div class="relative group cursor-pointer overflow-hidden rounded-xl h-48 sm:h-64" onclick="openLightbox('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80', 'Frisches Holzofenbrot')">
+          <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80" alt="Holzofenbrot" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <div class="absolute inset-0 bg-forest-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass-plus text-2xl text-white"></i>
+          </div>
+        </div>
+
+        <div class="relative group cursor-pointer overflow-hidden rounded-xl h-48 sm:h-64" onclick="openLightbox('https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80', 'Gemütlicher Gastraum')">
+          <img src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=600&q=80" alt="Gastraum" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <div class="absolute inset-0 bg-forest-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass-plus text-2xl text-white"></i>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contact, Hours & Map Section -->
+  <section id="contact" class="py-20 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      
+      <!-- Contact Info & Opening Hours -->
+      <div class="lg:col-span-5 space-y-8">
+        <div>
+          <span class="text-terracotta-500 font-bold uppercase tracking-wider text-xs block mb-2">Kontakt & Öffnungszeiten</span>
+          <h2 class="font-serif text-3xl font-bold text-forest-800 mb-4">Wir freuen uns auf Ihren Besuch!</h2>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Haben Sie Fragen zu unseren Terminen, möchten Sie Brot bestellen oder einen Tisch für Ihre Feier reservieren?
+          </p>
+        </div>
+
+        <!-- Opening Hours Box -->
+        <div class="bg-white rounded-2xl p-6 border border-cream-300/80 shadow-sm">
+          <h3 class="font-serif font-bold text-forest-800 text-xl mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-clock text-terracotta-500"></i> Öffnungszeiten
+          </h3>
+          
+          <ul class="space-y-3 text-sm">
+            <li class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-600 font-medium">Dienstag – Freitag</span>
+              <span class="font-bold text-forest-800">11:30 – 18:00 Uhr</span>
+            </li>
+            <li class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-600 font-medium">Samstag (Reibekuchentag)</span>
+              <span class="font-bold text-forest-800">11:30 – 18:00 Uhr</span>
+            </li>
+            <li class="flex justify-between py-1.5 border-b border-slate-100">
+              <span class="text-slate-600 font-medium">Sonntag & Feiertage</span>
+              <span class="font-bold text-forest-800">11:30 – 18:00 Uhr</span>
+            </li>
+            <li class="flex justify-between py-1.5">
+              <span class="text-slate-500 font-medium">Montag</span>
+              <span class="font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">Ruhetag</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Address & Contact Quick Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-forest-800 text-white p-5 rounded-2xl">
+            <i class="fa-solid fa-location-dot text-terracotta-400 text-xl mb-2"></i>
+            <h4 class="font-bold text-sm mb-1">Adresse</h4>
+            <p class="text-xs text-cream-200">Auf der Halle 12<br>58135 Hagen</p>
+          </div>
+
+          <div class="bg-terracotta-500 text-white p-5 rounded-2xl">
+            <i class="fa-solid fa-phone text-white text-xl mb-2"></i>
+            <h4 class="font-bold text-sm mb-1">Telefon</h4>
+            <a href="tel:0233143413" class="text-xs font-bold text-cream-100 underline hover:text-white block">02331 - 4 34 13</a>
+            <span class="text-[10px] opacity-80 block mt-1">Für Reservierungen</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Map View -->
+      <div class="lg:col-span-7 bg-white rounded-2xl p-3 border border-cream-300 shadow-sm h-[450px] lg:h-auto min-h-[400px]">
+        <iframe 
+          title="Google Maps Café Halle"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2489.102391295248!2d7.420800000000001!3d51.34560000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b9231f24d33451%3A0x6295fa94e135bdfa!2sAuf%20der%20Halle%2012%2C%2058135%20Hagen!5e0!3m2!1sde!2sde!4v1700000000000!5m2!1sde!2sde" 
+          class="w-full h-full rounded-xl border-0" 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-forest-900 text-cream-200 pt-16 pb-8 border-t border-forest-800">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      
+      <!-- Brand Column -->
+      <div class="md:col-span-2">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-terracotta-500 text-white flex items-center justify-center font-serif text-xl font-bold">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <span class="font-serif text-2xl font-bold text-white tracking-wide">CAFÉ HALLE</span>
+        </div>
+        <p class="text-xs text-cream-300 max-w-sm mb-6 leading-relaxed">
+          Ihre Waldgaststätte & Bauerncafé in Hagen. Genießen Sie hausgemachte Kuchen, Brotspezialitäten und traditionelle Speisen im Grünen.
+        </p>
+        <div class="flex space-x-3 text-terracotta-400">
+          <a href="#" class="w-9 h-9 rounded-full bg-forest-800 flex items-center justify-center hover:bg-terracotta-500 hover:text-white transition-colors"><i class="fa-brands fa-facebook-f text-sm"></i></a>
+          <a href="#" class="w-9 h-9 rounded-full bg-forest-800 flex items-center justify-center hover:bg-terracotta-500 hover:text-white transition-colors"><i class="fa-brands fa-instagram text-sm"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-serif text-white font-bold text-base mb-4">Navigation</h4>
+        <ul class="space-y-2 text-xs text-cream-300">
+          <li><a href="#about" class="hover:text-terracotta-400 transition-colors">Über Uns</a></li>
+          <li><button onclick="openMenuModal('all')" class="hover:text-terracotta-400 transition-colors">Speisekarte</button></li>
+          <li><a href="#highlights" class="hover:text-terracotta-400 transition-colors">Kulinarische Highlights</a></li>
+          <li><a href="#events" class="hover:text-terracotta-400 transition-colors">Veranstaltungen & Termine</a></li>
+          <li><a href="#gallery" class="hover:text-terracotta-400 transition-colors">Galerie</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal / Info -->
+      <div>
+        <h4 class="font-serif text-white font-bold text-base mb-4">Rechtliches</h4>
+        <ul class="space-y-2 text-xs text-cream-300">
+          <li><a href="#" class="hover:text-terracotta-400 transition-colors">Impressum</a></li>
+          <li><a href="#" class="hover:text-terracotta-400 transition-colors">Datenschutz</a></li>
+          <li><a href="#" class="hover:text-terracotta-400 transition-colors">Cookie-Einstellungen</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pt-6 border-t border-forest-800/60 text-center text-[11px] text-cream-300/60 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <p>&copy; <span id="year"></span> Café Halle – Waldgaststätte & Bauerncafé Hagen. Alle Rechte vorbehalten.</p>
+      <p>Auf der Halle 12, 58135 Hagen | Tel: 02331 - 4 34 13</p>
+    </div>
+    <div class="text-center pb-6"><a href="login.html" id="adminLink" class="text-xs text-cream-300 hover:text-terracotta-400"><i class="fa-solid fa-lock mr-1"></i><span>Admin-Login</span></a></div>
+  </footer>
+
+
+
+  <!-- ========================================== -->
+  <!-- 1. INTERACTIVE MENU MODAL -->
+  <!-- ========================================== -->
+  <div id="menuModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden modal-content border border-cream-300">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-forest-800 text-white flex justify-between items-center shrink-0">
+        <div>
+          <h2 class="font-serif text-2xl font-bold text-cream-50">Unsere Speisekarte</h2>
+          <p class="text-xs text-cream-300">Frische regionale Zutaten & Hausmacher-Spezialitäten</p>
+        </div>
+        <button onclick="closeMenuModal()" class="w-9 h-9 rounded-full bg-forest-700 hover:bg-forest-900 flex items-center justify-center text-white transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Category Filter Tabs & Search Bar -->
+      <div class="p-4 bg-cream-100 border-b border-cream-300 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
+        <div class="flex space-x-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <button onclick="filterMenuCategory('all')" class="menu-tab-btn tab-active px-3 py-1.5 text-xs font-bold rounded-lg transition-colors">Alle Gerichte</button>
+          <button onclick="filterMenuCategory('kuchen')" class="menu-tab-btn px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:text-forest-800 transition-colors">Kuchen & Torten</button>
+          <button onclick="filterMenuCategory('deftiges')" class="menu-tab-btn px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:text-forest-800 transition-colors">Deftiges & Klassiker</button>
+          <button onclick="filterMenuCategory('getraenke')" class="menu-tab-btn px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:text-forest-800 transition-colors">Getränke</button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-48">
+          <input type="text" id="menuSearch" oninput="searchMenuItems()" placeholder="Gericht suchen..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:border-terracotta-500">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs absolute left-2.5 top-2.5"></i>
+        </div>
+      </div>
+
+      <!-- Menu Items Container (Scrollable) -->
+      <div id="menuItemsContainer" class="p-6 overflow-y-auto space-y-6 flex-1">
+        <!-- JS dynamically populates items here -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-cream-200 border-t border-cream-300 flex justify-between items-center text-xs text-slate-600 shrink-0">
+        <span>* Alle Preise inkl. MwSt. Saisonale Änderungen vorbehalten.</span>
+        <button onclick="openReservationModal(); closeMenuModal()" class="px-4 py-2 bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold rounded-lg transition-colors shadow">
+          Tisch Reservieren
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. INTERACTIVE RESERVATION / BREAD ORDER MODAL -->
+  <!-- ========================================== -->
+  <div id="reservationModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden modal-content border border-cream-300">
+      
+      <div class="p-6 bg-forest-800 text-white flex justify-between items-center">
+        <div>
+          <h2 class="font-serif text-2xl font-bold text-cream-50">Tisch & Brot Reservierung</h2>
+          <p class="text-xs text-cream-300">Sichern Sie sich Ihren Platz oder frisches Holzofenbrot</p>
+        </div>
+        <button onclick="closeReservationModal()" class="w-9 h-9 rounded-full bg-forest-700 hover:bg-forest-900 flex items-center justify-center text-white transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="reservationForm" onsubmit="handleReservationSubmit(event)" class="p-6 space-y-4">
+        
+        <!-- Type Selection -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Was möchten Sie reservieren?</label>
+          <select id="resType" onchange="toggleBreadOptions()" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+            <option value="Tischreservierung">Tisch im Café / Biergarten</option>
+            <option value="Brotbestellung">Brotbestellung (Holzofenbrot)</option>
+            <option value="Schnitzeltag">Schnitzeltag (Donnerstag)</option>
+            <option value="Reibekuchentag">Reibekuchentag (Samstag)</option>
+          </select>
+        </div>
+
+        <!-- Bread Specific Options (Hidden by default) -->
+        <div id="breadSelectGroup" class="hidden p-3 bg-cream-100 rounded-xl border border-cream-300 space-y-2">
+          <label class="block text-xs font-bold text-forest-800">Brotsorte wählen (Abholung alle 2 Wochen Do):</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center space-x-2 bg-white p-2 rounded border cursor-pointer">
+              <input type="checkbox" name="bread" value="Dinkelbrot" class="accent-terracotta-500">
+              <span>Dinkelbrot</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-white p-2 rounded border cursor-pointer">
+              <input type="checkbox" name="bread" value="Malzbrot" class="accent-terracotta-500">
+              <span>Malzbrot</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-white p-2 rounded border cursor-pointer">
+              <input type="checkbox" name="bread" value="Bärlauchbrot" class="accent-terracotta-500">
+              <span>Bärlauchbrot</span>
+            </label>
+            <label class="flex items-center space-x-2 bg-white p-2 rounded border cursor-pointer">
+              <input type="checkbox" name="bread" value="Süßer Stuten" class="accent-terracotta-500">
+              <span>Süßer Stuten</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Date & Time Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Datum *</label>
+            <input type="date" required id="resDate" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Uhrzeit *</label>
+            <select required id="resTime" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+              <option value="11:30">11:30 Uhr</option>
+              <option value="12:00">12:00 Uhr</option>
+              <option value="12:30">12:30 Uhr</option>
+              <option value="13:00">13:00 Uhr</option>
+              <option value="14:00">14:00 Uhr</option>
+              <option value="15:00">15:00 Uhr</option>
+              <option value="16:00">16:00 Uhr</option>
+              <option value="17:30">17:30 Uhr (Schnitzeltag)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Guest Count & Contact Data -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Personenanzahl</label>
+            <input type="number" min="1" max="20" value="2" id="resGuests" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Name *</label>
+            <input type="text" required placeholder="Ihr Vor- & Nachname" id="resName" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Telefonnummer *</label>
+            <input type="tel" required placeholder="02331 / ..." id="resPhone" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">E-Mail</label>
+            <input type="email" placeholder="beispiel@mail.de" id="resEmail" class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Anmerkungen / Sonderwünsche</label>
+          <textarea rows="2" placeholder="z. B. Kinderhochstuhl, Alllergien, Platz im Biergarten..." class="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-terracotta-500 focus:outline-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-sm rounded-xl shadow-lg transition-all mt-2">
+          Anfrage Verbindlich Absenden
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 3. LIGHTBOX MODAL FOR GALLERY -->
+  <!-- ========================================== -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4" onclick="closeLightbox()">
+    <div class="relative max-w-4xl w-full text-center" onclick="event.stopPropagation()">
+      <img id="lightboxImg" src="" alt="Vorschau" class="max-h-[85vh] mx-auto rounded-xl shadow-2xl object-contain">
+      <p id="lightboxCaption" class="mt-3 text-white font-serif text-lg font-medium"></p>
+      <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-terracotta-400">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- ========================================== -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 hidden bg-forest-800 text-white px-5 py-3 rounded-xl shadow-2xl border border-terracotta-500 flex items-center gap-3 animate-bounce">
+    <i class="fa-solid fa-circle-check text-terracotta-400 text-xl"></i>
+    <span id="toastMsg" class="text-xs font-semibold">Ihre Anfrage wurde erfolgreich übermittelt!</span>
+  </div>
+
+  <!-- JavaScript Code -->
+  <script>
+    // 1. DATA: Speisekarte Items
+    const menuItems = [
+      { id: 1, category: 'kuchen', name: 'Hausgemachte Stachelbeer-Baiser-Torte', desc: 'Erfrischend-fruchtig mit krosser Baiserhaube nach altbewährtem Geheimrezept.', price: '4,20 €', badge: 'Klassiker' },
+      { id: 2, category: 'kuchen', name: 'Warmer Apfelkuchen mit Vanilleeis', desc: 'Mit Mandeln verfeinert und frisch geschlagener Schlagsahne.', price: '4,50 €', badge: 'Empfehlung' },
+      { id: 3, category: 'kuchen', name: 'Käsekuchen nach Omas Art', desc: 'Cremig gebacken mit feiner Zitronennote.', price: '3,80 €', badge: '' },
+      { id: 4, category: 'deftiges', name: 'Knusprige Reibekuchen (3 Stück)', desc: 'Serviert mit süßem Apfelkompott oder kühlem Kräuterquark.', price: '8,90 €', badge: 'Jeden Samstag' },
+      { id: 5, category: 'deftiges', name: 'Reibekuchen mit Räucherlachs', desc: '3 Reibekuchen mit feinem Lachs, Sahnemeerrettich und kl. Salat.', price: '12,50 €', badge: '' },
+      { id: 6, category: 'deftiges', name: 'Jägerschnitzel mit Pommes', desc: 'Zartes Schweineschnitzel mit pikanter Waldpilzsauce und Salat.', price: '14,80 €', badge: 'Donnerstag 9,49 €' },
+      { id: 7, category: 'deftiges', name: 'Deftiges Bauernfrühstück', desc: 'Bratkartoffeln mit Schinken, Gewürzgurke und 3 Spiegeleiern.', price: '11,20 €', badge: '' },
+      { id: 8, category: 'getraenke', name: 'Pott Bohnenkaffee / Cappuccino', desc: 'Frisch gemahlen aus edlen Röstbohnen.', price: '3,20 €', badge: '' },
+      { id: 9, category: 'getraenke', name: 'Frisches Landbier vom Fass (0,4l)', desc: 'Kühl und süffig serviert.', price: '4,10 €', badge: '' },
+      { id: 10, category: 'getraenke', name: 'Hausgemachte Rhabarber-Limonade', desc: 'Mit frischer Minze und Eiswürfeln (0,4l).', price: '4,20 €', badge: 'Erfrischend' }
+    ];
+
+    // Gemeinsame Daten mit dem Admin-Bereich (localStorage)
+    function load(key){ try { return JSON.parse(localStorage.getItem(key)); } catch(e){ return null; } }
+    (function(){
+      const m = load('cafeHalle_menu');
+      if (m && m.length) { menuItems.length = 0; m.filter(i => i.available !== false).forEach(i => menuItems.push(i)); }
+    })();
+    const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    function renderEvents(){
+      const ev = load('cafeHalle_events'); if (!ev) return;
+      document.getElementById('eventsGrid').innerHTML = ev.length ? ev.map(e => {
+        const [big, ...rest] = String(e.dateBadge || '').split(' ');
+        return `<div class="event-card ${esc(e.category)} bg-white rounded-2xl p-6 border border-cream-300/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div><div class="flex justify-between items-start mb-4">
+            <div class="bg-terracotta-500/10 text-terracotta-600 font-serif font-bold text-center px-3 py-1.5 rounded-lg border border-terracotta-500/20">
+              <span class="block text-xl leading-none">${esc(big)}</span><span class="text-xs uppercase">${esc(rest.join(' '))}</span></div>
+            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">${e.category==='musik'?'Tanz & Musik':'Saisonal'}</span></div>
+            <h3 class="font-serif text-xl font-bold text-forest-800 mb-2">${esc(e.title)}</h3>
+            <p class="text-xs text-slate-500 mb-3"><i class="fa-regular fa-clock mr-1"></i> ${esc(e.time)}</p>
+            <p class="text-slate-600 text-sm mb-6">${esc(e.desc)}</p></div>
+          <button onclick="openReservationModal('Tischreservierung')" class="w-full py-2 bg-cream-200 hover:bg-forest-800 hover:text-white text-forest-800 font-bold text-xs rounded-lg transition-colors">Platz Sichern</button></div>`;
+      }).join('') : '<p class="col-span-full text-center text-slate-500 py-8">Aktuell sind keine Termine geplant.</p>';
+    }
+
+    function renderGallery(){
+      const g = load('cafeHalle_gallery'); if (!g) return;
+      document.getElementById('galleryGrid').innerHTML = g.map(i => `
+        <div class="relative group cursor-pointer overflow-hidden rounded-xl h-48 sm:h-64" onclick="openLightbox(this.querySelector('img').src, this.querySelector('img').alt)">
+          <img src="${esc(i.src)}" alt="${esc(i.caption)}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+          <div class="absolute inset-0 bg-forest-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-solid fa-magnifying-glass-plus text-2xl text-white"></i></div></div>`).join('');
+    }
+
+    function renderNotice(){
+      const box = document.getElementById('siteNotice');
+      const closed = localStorage.getItem('cafeHalle_closed') === '1';
+      const n = localStorage.getItem('cafeHalle_notice');
+      const map = { Ausgebucht:['bg-amber-500 text-white','Heute leider ausgebucht – bitte reservieren Sie für einen anderen Tag.'],
+                    Regen:['bg-sky-600 text-white','Wegen Regen heute nur Innenbereich geöffnet.'] };
+      if (closed) { box.className='text-center text-sm font-semibold py-2.5 px-4 bg-rose-700 text-white'; box.textContent='Wir haben derzeit außerplanmäßig geschlossen. Bitte rufen Sie uns an: 02331 - 4 34 13'; }
+      else if (map[n]) { box.className='text-center text-sm font-semibold py-2.5 px-4 '+map[n][0]; box.textContent=map[n][1]; }
+      else box.className='hidden';
+    }
+
+    // Initialize Year & Status on DOM Load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+      renderMenuItems(menuItems);
+      updateOpenStatus();
+      renderEvents(); renderGallery(); renderNotice();
+      if (sessionStorage.getItem('cafeHalle_auth') === '1') {
+        const l = document.getElementById('adminLink'); l.href = 'admin.html'; l.querySelector('span').textContent = 'Zum Admin-Bereich';
+      }
+    });
+
+    window.addEventListener('storage', () => { renderEvents(); renderGallery(); renderNotice(); updateOpenStatus(); renderMenuItems(menuItems.splice(0, menuItems.length, ...((load('cafeHalle_menu')||menuItems).filter(i=>i.available!==false))) && menuItems); });
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Dynamic Live Open Status Badge Calculation
+    function updateOpenStatus() {
+      const now = new Date();
+      const day = now.getDay(); // 0 = Sunday, 1 = Monday
+      const hour = now.getHours();
+      const badge = document.getElementById('openStatusBadge');
+
+      if (localStorage.getItem('cafeHalle_closed') === '1') {
+        badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800 border border-rose-300";
+        badge.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-rose-500 rounded-full"></span> AKTUELL GESCHLOSSEN';
+      } else if (day === 1) {
+        badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-100 text-rose-800 border border-rose-300";
+        badge.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-rose-500 rounded-full"></span> HEUTE RUHETAG';
+      } else if (hour >= 11 && hour < 18) {
+        badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300";
+        badge.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> JETZT GEÖFFNET';
+      } else {
+        badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-300";
+        badge.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full"></span> DERZEIT GESCHLOSSEN';
+      }
+    }
+
+    // Render Menu Items Function
+    function renderMenuItems(items) {
+      const container = document.getElementById('menuItemsContainer');
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-center text-slate-500 py-8 text-sm">Keine Gerichte gefunden.</p>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-xl border border-cream-200 hover:border-terracotta-400/50 hover:bg-cream-100/50 transition-all gap-2">
+          <div class="flex-1">
+            <div class="flex items-center space-x-2">
+              <h4 class="font-serif font-bold text-forest-800 text-lg">${item.name}</h4>
+              ${item.badge ? `<span class="px-2 py-0.5 bg-terracotta-500/10 text-terracotta-600 text-[10px] font-bold rounded">${item.badge}</span>` : ''}
+            </div>
+            <p class="text-xs text-slate-600 mt-1">${item.desc}</p>
+          </div>
+          <div class="font-serif font-bold text-forest-800 text-lg shrink-0">${item.price}</div>
+        </div>
+      `).join('');
+    }
+
+    // Filter Menu Categories
+    function filterMenuCategory(cat) {
+      document.querySelectorAll('.menu-tab-btn').forEach(btn => {
+        btn.className = "menu-tab-btn px-3 py-1.5 text-xs font-semibold text-slate-600 rounded-lg hover:text-forest-800 transition-colors";
+      });
+      event.target.className = "menu-tab-btn tab-active px-3 py-1.5 text-xs font-bold rounded-lg transition-colors";
+
+      if (cat === 'all') {
+        renderMenuItems(menuItems);
+      } else {
+        const filtered = menuItems.filter(i => i.category === cat);
+        renderMenuItems(filtered);
+      }
+    }
+
+    // Search Menu
+    function searchMenuItems() {
+      const query = document.getElementById('menuSearch').value.toLowerCase();
+      const filtered = menuItems.filter(i => 
+        i.name.toLowerCase().includes(query) || i.desc.toLowerCase().includes(query)
+      );
+      renderMenuItems(filtered);
+    }
+
+    // Open/Close Menu Modal
+    function openMenuModal(cat = 'all') {
+      document.getElementById('menuModal').classList.remove('hidden');
+      filterMenuCategory(cat);
+    }
+
+    function closeMenuModal() {
+      document.getElementById('menuModal').classList.add('hidden');
+    }
+
+    // Open/Close Reservation Modal
+    function openReservationModal(presetType = 'Tischreservierung') {
+      const modal = document.getElementById('reservationModal');
+      const select = document.getElementById('resType');
+      
+      if (presetType) {
+        select.value = presetType;
+      }
+      toggleBreadOptions();
+      modal.classList.remove('hidden');
+    }
+
+    function closeReservationModal() {
+      document.getElementById('reservationModal').classList.add('hidden');
+    }
+
+    function toggleBreadOptions() {
+      const val = document.getElementById('resType').value;
+      const breadGroup = document.getElementById('breadSelectGroup');
+      if (val === 'Brotbestellung') {
+        breadGroup.classList.remove('hidden');
+      } else {
+        breadGroup.classList.add('hidden');
+      }
+    }
+
+    // Filter Events
+    function filterEvents(cat) {
+      document.querySelectorAll('.event-filter-btn').forEach(btn => {
+        btn.className = "event-filter-btn px-4 py-2 rounded-full text-xs font-bold bg-cream-200 text-slate-700 hover:bg-forest-800 hover:text-white transition-all";
+      });
+      event.target.className = "event-filter-btn px-4 py-2 rounded-full text-xs font-bold bg-forest-800 text-white transition-all";
+
+      const cards = document.querySelectorAll('.event-card');
+      cards.forEach(card => {
+        if (cat === 'all' || card.classList.contains(cat)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Handle Reservation Form Submit
+    function handleReservationSubmit(e) {
+      e.preventDefault();
+      const v = id => document.getElementById(id).value;
+      const type = v('resType');
+      const bread = [...document.querySelectorAll('input[name=bread]:checked')].map(b => b.value).join(', ');
+      const list = load('cafeHalle_res') || [];
+      list.unshift({ id: Date.now(), name: v('resName'), phone: v('resPhone'), type,
+        date: v('resDate'), time: v('resTime'),
+        guests: type === 'Brotbestellung' && bread ? bread : v('resGuests') + ' Personen',
+        notes: v('resEmail') ? 'E-Mail: ' + v('resEmail') : '', status: 'Ausstehend' });
+      localStorage.setItem('cafeHalle_res', JSON.stringify(list));
+      closeReservationModal();
+      
+      // Show Toast Notification
+      const toast = document.getElementById('toastNotification');
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+
+      document.getElementById('reservationForm').reset();
+    }
+
+    // Gallery Lightbox
+    function openLightbox(imgSrc, caption) {
+      document.getElementById('lightboxImg').src = imgSrc;
+      document.getElementById('lightboxCaption').textContent = caption;
+      document.getElementById('lightboxModal').classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

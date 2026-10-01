@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Halle | Admin-Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { forest: { 800: '#1b3b2b', 900: '#12291e' }, terracotta: { 500: '#c87d32', 600: '#ac6422' } },
+      fontFamily: { serif: ['"Playfair Display"', 'Georgia', 'serif'], sans: ['"Plus Jakarta Sans"', 'sans-serif'] } } } }
+  </script>
+  <script>if (sessionStorage.getItem('cafeHalle_auth') === '1' && !location.search.includes('out')) location.replace('admin.html');</script>
+</head>
+<body class="min-h-screen bg-forest-900 font-sans flex items-center justify-center p-4">
+  <form id="loginForm" onsubmit="handleLogin(event)" class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
+    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-terracotta-500 text-white flex items-center justify-center text-2xl"><i class="fa-solid fa-lock"></i></div>
+    <h1 id="loginTitle" class="font-serif text-2xl font-bold text-forest-800 text-center">Admin-Login</h1>
+    <p id="loginHint" class="text-xs text-slate-500 text-center mt-1 mb-6">Café Halle Verwaltung</p>
+    <input id="loginPw" type="password" required autocomplete="current-password" placeholder="Passwort" class="w-full p-3 rounded-lg border border-slate-300 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-terracotta-500">
+    <input id="loginPw2" type="password" autocomplete="new-password" placeholder="Passwort wiederholen" class="hidden w-full p-3 rounded-lg border border-slate-300 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-terracotta-500">
+    <p id="loginError" class="hidden text-xs text-rose-600 font-semibold mb-3"></p>
+    <button id="loginBtn" class="w-full py-3 rounded-lg bg-forest-800 hover:bg-forest-900 text-white font-bold text-sm transition-colors">Anmelden</button>
+    <a href="index.html" class="block text-center text-xs text-slate-500 hover:text-terracotta-600 mt-4">← Zurück zur Website</a>
+  </form>
+  <script>
+    const AUTH_KEY = 'cafeHalle_pwhash', $ = id => document.getElementById(id);
+    async function sha(t) {
+      const data = new TextEncoder().encode('cafeHalle::' + t);
+      if (window.crypto && crypto.subtle) {
+        const h = await crypto.subtle.digest('SHA-256', data);
+        return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      let x = 5381; for (const b of data) x = ((x << 5) + x + b) >>> 0; return 'f' + x;
+    }
+    function loginErr(m) { $('loginError').textContent = m; $('loginError').classList.remove('hidden'); }
+    if (!localStorage.getItem(AUTH_KEY)) {
+      $('loginTitle').textContent = 'Passwort festlegen';
+      $('loginHint').textContent = 'Erster Start: Bitte legen Sie ein Admin-Passwort fest (min. 8 Zeichen).';
+      $('loginPw2').classList.remove('hidden'); $('loginPw2').required = true;
+      $('loginBtn').textContent = 'Passwort speichern';
+    }
+    async function handleLogin(e) {
+      e.preventDefault();
+      const pw = $('loginPw').value, stored = localStorage.getItem(AUTH_KEY);
+      if (!stored) {
+        if (pw.length < 8) return loginErr('Das Passwort braucht mindestens 8 Zeichen.');
+        if (pw !== $('loginPw2').value) return loginErr('Die Passwörter stimmen nicht überein.');
+        localStorage.setItem(AUTH_KEY, await sha(pw));
+      } else {
+        const lock = +localStorage.getItem('cafeHalle_lock') || 0;
+        if (Date.now() < lock) return loginErr('Zu viele Versuche. Bitte ' + Math.ceil((lock - Date.now()) / 1000) + ' s warten.');
+        if (await sha(pw) !== stored) {
+          const f = (+sessionStorage.getItem('cafeHalle_fails') || 0) + 1;
+          if (f >= 3) { localStorage.setItem('cafeHalle_lock', Date.now() + 30000); sessionStorage.setItem('cafeHalle_fails', 0); }
+          else sessionStorage.setItem('cafeHalle_fails', f);
+          return loginErr('Falsches Passwort.');
+        }
+      }
+      sessionStorage.setItem('cafeHalle_auth', '1');
+      location.href = 'admin.html';
+    }
+  </script>
+</body>
+</html>
